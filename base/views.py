@@ -17,10 +17,12 @@ def error_404_view(request, exception):
 def all_blogs(request):
     """
         This view return all of the blogposts, showing 5 item on each page, according to the
-         last parameter of the paginateBlogs fucntion (5).It also get the queryset by the serach parameter.
+        last parameter of the paginateBlogs fucntion (5).It also get the queryset by the serach parameter.
     """
     blogs, search_query = searchBlogs(request)
-    custom_range, blogs = paginateBlogs(request, blogs, 5)
+    custom_range, blogs = paginateBlogs(request, blogs,5)
+
+    print(blogs.number)
     context = {'blogs': blogs, 'search_query': search_query, 'custom_range': custom_range}
 
     return render(request, 'base/home.html', context)

@@ -46,11 +46,12 @@ def paginateBlogs(request, blogs, results):
     if leftIndex < 1:
         leftIndex = 1
 
-    rightIndex =(int(page) + 5)
+    rightIndex = (int(page) + 5)
 
     if rightIndex > paginator.num_pages:
         rightIndex = paginator.num_pages + 1
 
     # projects = paginator.page(page)
+    print(page, leftIndex, rightIndex)
     custom_range = range(leftIndex, rightIndex)
     return custom_range, blogs

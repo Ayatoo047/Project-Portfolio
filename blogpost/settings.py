@@ -39,18 +39,35 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-INSTALLED_APPS = [
-    "base.apps.BaseConfig",
+SHARED_APPS = [
+    'django_tenants',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users'
+    'core'
 ]
 
+TENANT_APPS = [
+            #    'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.auth',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+            'django.contrib.sessions',
+            'django.contrib.admin',
+            'users.apps.UsersConfig',
+            "base.apps.BaseConfig",
+        
+        ]
+
+INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
+
+
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,15 +103,29 @@ WSGI_APPLICATION = 'blogpost.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         # 'USERNAME':,
+#         # 'PASSWORD':,
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        # 'USERNAME':,
-        # 'PASSWORD':,
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django_tenants.postgresql_backend',
+        'NAME': 'blog_postgres',
+        'USER': 'blog_postgres',
+        'PASSWORD': 'blog_postgres',
+        'HOST': 'localhost',   # or postgres
+        'PORT': 5432
     }
 }
 
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -140,3 +171,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+TENANT_MODEL = "core.Client"
+
+TENANT_DOMAIN_MODEL = "core.Domain"
+
+PUBLIC_SCHEMA_URLCONF = "core.urls"
+PUBLIC_SCHEMA_NAME = 'public'
